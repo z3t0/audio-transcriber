@@ -1,7 +1,11 @@
 #!/bin/bash
+echo "removing output dir"
+cmd="rm -rf ./output/"
+echo "\$ $cmd"
+$cmd
 
 echo "making output dir"
-cmd="mkdir output/"
+cmd="mkdir ./output/"
 echo "\$ $cmd"
 $cmd
 
@@ -17,18 +21,22 @@ echo "\$ $cmd"
 FILELIST=$($cmd)
 
 for file in $FILELIST; do
-    echo $file
     INPUT_FILES+=( $INPUT_DIR$file )
 done
 
 echo "INPUT_FILES"
 
 for file in "${INPUT_FILES[@]}"; do
-    echo $file
-    docker run -v ./tmp/whisperx-cache/:/root/.cache   -v ./input/:/app/input -v ./output/:/app/output rk-whisperx --compute_type=int8 --model=large-v3 --output_format=srt --output_dir=output $file
-done
+    echo "processing: $file"
+    out_dir="./output/$(basename $file)"
+    # remove extension
+    out_dir="${out_dir%.*}"
 
-# for file in $INPUT_FILES; do
-#     echo $file
-#     docker run -v /home/rkhan971/tmp/whisperx-cache:/root/.cache   -v $INPUT_DIR/:/app/input -v ./output/:/app/output rk-whisperx --compute_type=int8 --model=large-v3 --output_format=srt --output_dir=output $file
-# done
+    # TODO: run this with model=large-v3
+    # but for getting it working use a smaller model
+    cmd="docker run -v ./tmp/whisperx-cache/:/root/.cache   -v ./input/:/app/input -v ./output:/app/output rk-whisperx --compute_type=int8 --model=medium.en --output_format=srt --output_dir=./output $file"
+    echo "\$ $cmd"
+    $cmd
+
+    echo "DONE docker run"
+done
