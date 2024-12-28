@@ -1,2 +1,10 @@
+# audio-transcriber
+
+- Transcribe a set of audio files to a set of srt text.
+- Collect a set of srt text files into an org capture file.
+
+
+  
 # LICENSE
+
 AGPLv3
